@@ -638,6 +638,7 @@ app.get('/', catchAsync(async (req, res) => {
 		res.render('index.ejs', {
 			user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
 		});
+		return;
 	} else if (typeof req.query.token !== 'undefined') {
 		var response = await fetch(`http://discordapp.com/api/users/@me`,
 		{
@@ -649,9 +650,9 @@ app.get('/', catchAsync(async (req, res) => {
 		var json = await response.json();
 		req.query.token = null;
 		delete req.query.token;
+		console.log(json);
 		req.session.user = json;
 		res.redirect('/');
-		res.status(200).sendFile(path.join(__dirname, 'index.html'));
 		return;
 	}
 		res.status(200).sendFile(path.join(__dirname, 'login.html'));
