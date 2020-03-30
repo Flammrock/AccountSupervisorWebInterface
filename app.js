@@ -611,7 +611,7 @@ app.get('/api/discord/callback', (req, res) => {
         Authorization: `Basic ${creds}`,
       },
     });
-  var json = await response.json();
+  var json = response.json();
   res.redirect(`/?token=${json.access_token}`);
 	} catch(e) {res.status(200).send('Unknow error');}
 });
