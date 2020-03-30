@@ -594,9 +594,6 @@ const fetch = require('node-fetch');
 const btoa = require('btoa');
 var app = express();
 app.use(session({
-	genid: function(req) {
-		return genuuid()
-	},
 	secret: 'keyboard cat fffdsrr',
 	resave: false,
 	saveUninitialized: true,
