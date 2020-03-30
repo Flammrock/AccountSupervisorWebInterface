@@ -642,12 +642,13 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 		var user = await response.json();
 		req.session.user = 'FUCKCKCKCKCKCKCK';
 		req.session.save(function(err) {
-			if(!err) {
+			/*if(!err) {
 				console.log(req.session.user);
 				res.redirect("/");
 			} else {
 				res.status(200).send(err.toString());
-			}
+			}*/
+			res.status(200).send(err.toString());
 		});
 	} catch(e) {res.status(200).send(e.toString());}
 }));
