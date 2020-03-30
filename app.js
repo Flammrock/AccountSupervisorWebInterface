@@ -589,6 +589,8 @@ new Command('list_command', function(msg,args) {
 const port = process.env.PORT || 80;
 var path = require('path');
 var express = require('express');
+const fetch = require('node-fetch');
+const btoa = require('btoa');
 var app = express();
 
 
@@ -604,14 +606,14 @@ app.get('/api/discord/callback', (req, res) => {
 	try {
   var code = req.query.code;
   var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
-  var response = fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
+  var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
     {
       method: 'POST',
       headers: {
         Authorization: `Basic ${creds}`,
       },
     });
-  var json = response.json();
+  var json = await response.json();
   res.redirect(`/?token=${json.access_token}`);
 	} catch(e) {res.status(200).send(e.toString());}
 });
