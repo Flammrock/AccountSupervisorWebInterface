@@ -606,14 +606,14 @@ app.get('/api/discord/callback', (req, res) => {
 	try {
   var code = req.query.code;
   var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
-  var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
+  var response = fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
     {
       method: 'POST',
       headers: {
         Authorization: `Basic ${creds}`,
       },
     });
-  var json = await response.json();
+  var json = response.json();
   res.redirect(`/?token=${json.access_token}`);
 	} catch(e) {res.status(200).send(e.toString());}
 });
