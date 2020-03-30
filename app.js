@@ -659,7 +659,7 @@ app.get('/', catchAsync(async (req, res) => {
 		console.log(req.session);
 		if (req.session.user) {
 			res.render('index.ejs', {
-				user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
+				user: req.session.user
 			});
 		} else {
 			res.status(200).sendFile(path.join(__dirname, 'login.html'));

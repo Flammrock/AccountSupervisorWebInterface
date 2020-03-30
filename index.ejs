@@ -12,7 +12,7 @@
   <body>
 	You are connected!<br />
     <script type="text/javascript">
-      var test = JSON.parse('<%= user %>');
+      var test = '<%= JSON.stringify(req.session.user).replace(/'/g,'\\\'') %>';
 	  console.log(test);
     </script>
   </body>
