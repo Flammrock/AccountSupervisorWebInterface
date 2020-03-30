@@ -642,19 +642,19 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 		var user = await response.json();
 		req.session.user = 'FUCKCKCKCKCKCKCK';
 		req.session.save(function(err) {
-			/*if(!err) {
-				console.log(req.session.user);
+			if(!err) {
+				console.log(req.session.user,err);
 				res.redirect("/");
 			} else {
 				res.status(200).send(err.toString());
-			}*/
-			res.status(200).send(err.toString());
+			}
 		});
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
+		console.log(req.session);
 		if (req.session.user) {
 			res.render('index.ejs', {
 				user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
