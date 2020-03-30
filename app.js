@@ -589,6 +589,7 @@ new Command('list_command', function(msg,args) {
 const port = process.env.PORT || 80;
 var path = require('path');
 var express = require('express');
+var session = require('express-session');
 const fetch = require('node-fetch');
 const btoa = require('btoa');
 var app = express();
