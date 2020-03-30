@@ -5,8 +5,11 @@
   "main": "app.js",
   "dependencies": {
     "btoa": "^1.2.1",
+    "cookie-parser": "^1.4.5",
     "discord.js": "^12.1.1",
+    "ejs": "^3.0.2",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.0"
   },

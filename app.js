@@ -592,7 +592,16 @@ var express = require('express');
 const fetch = require('node-fetch');
 const btoa = require('btoa');
 var app = express();
-
+app.use(session({
+	genid: function(req) {
+		return genuuid()
+	},
+	secret: 'keyboard cat fffdsrr',
+	resave: false,
+	saveUninitialized: true,
+	cookie: { secure: true }
+}));
+app.set('view engine', 'ejs');
 
 const CLIENT_ID = '693825334835150918';
 const CLIENT_SECRET = 'd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
@@ -627,7 +636,11 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
-	if (typeof req.query.token !== 'undefined') {
+	if (req.session.user) {
+		res.render('index.ejs', {
+			user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
+		});
+	} else if (typeof req.query.token !== 'undefined') {
 		var response = await fetch(`http://discordapp.com/api/users/@me`,
 		{
 		  method: 'POST',
@@ -638,7 +651,8 @@ app.get('/', catchAsync(async (req, res) => {
 		var json = await response.json();
 		req.query.token = null;
 		delete req.query.token;
-		req.query.user = encodeURIComponent(JSON.stringify(json));
+		req.session.user = json;
+		res.redirect('/');
 		res.status(200).sendFile(path.join(__dirname, 'index.html'));
 		return;
 	}
