@@ -43,8 +43,8 @@
 		background-repeat: repeat-x;
 		background-color: #18191c;
 		border-radius: 6px;
-		border: solid 1px #eee;
-		box-shadow: 0px 2px 5px 0px rgba(155, 155, 155, 0.5);
+		border: solid 1px #3F4248;
+		box-shadow: 0px 2px 5px 0px rgba(24, 25, 28, 0.5);
 		box-sizing: border-box;
 		cursor: pointer;
 		display: block;
@@ -147,7 +147,7 @@
 		z-index: 999;
 		max-height: 250px;
 		overflow: auto;
-		border: 1px solid #ddd;
+		border: 1px solid #222;
 	}
 
 	.dropdown-select .list:hover .option:not(:hover) {
@@ -191,26 +191,26 @@
 
 	.dropdown-select .option:hover,
 	.dropdown-select .option:focus {
-		background-color: #7289da !important;
+		background-color: #25272B !important;
 	}
 
 	.dropdown-select .option.selected {
 		font-weight: 600;
-		color: #12cbc4;
+		color: #ccc;
 	}
 
 	.dropdown-select .option.selected:focus {
-		background: #5F73B6;
+		background: #3F4248;
 	}
 
 	.dropdown-select a {
-		color: #aaa;
+		color: #ccc;
 		text-decoration: none;
 		transition: all 0.2s ease-in-out;
 	}
 
 	.dropdown-select a:hover {
-		color: #666;
+		color: #ccc;
 	}
 
     </style>
@@ -234,10 +234,10 @@
 	  var index = 1;
 	  for (var i = 0; i < botguilds.length; i++) {
 		for (var j = 0; j < user.guilds.length; j++) {
-			if (botguilds[i].id==user.guilds[j].id) {
-				communs+='<option value="'+index+'">'+botguilds[i]+'</option>';
+			//if (botguilds[i].id==user.guilds[j].id) {
+				communs+='<option value="'+index+'">'+botguilds[i].name+'</option>';
 				index++;
-			}
+			//}
 		}
 	  }
 	  document.getElementById('select-servers').innerHTML = communs;
