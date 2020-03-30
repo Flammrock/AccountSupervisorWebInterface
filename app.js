@@ -2,6 +2,8 @@ const Discord = require('discord.js');
 const mysql = require("mysql");
 const bot = new Discord.Client();
 
+console.log(process.env);
+
 
 const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.XoC3CQ.meL6PnRHcv91pS2xnyRytJ3oiZE';
 const DATABASE_URI = process.env.DATABASE_URL;
