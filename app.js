@@ -611,9 +611,9 @@ app.get('/api/discord/login', (req, res) => {
 
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	try {
-  var code = req.query.code;
-  var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
-  var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
+	var code = req.query.code;
+	var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
+	var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
     {
       method: 'POST',
       headers: {
@@ -626,7 +626,24 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 }));
 
 app.get('/', function (req, res) {
-	res.status(200).sendFile(path.join(__dirname, 'index.html'));
+	try {
+	if (typeof req.query.token !== 'undefined') {
+		var response = await fetch(`http://discordapp.com/api/users/@me`,
+		{
+		  method: 'POST',
+		  headers: {
+			Authorization: req.query.token,
+		  },
+		});
+		var json = await response.json();
+		req.query.token = null;
+		delete req.query.token;
+		req.query.user = encodeURIComponent(JSON.stringify(json));
+		res.status(200).sendFile(path.join(__dirname, 'index.html'));
+		return;
+	}
+		res.status(200).sendFile(path.join(__dirname, 'login.html'));
+	} catch(e) {res.status(200).send(e.toString());}
 });
 
 
