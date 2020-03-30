@@ -625,7 +625,7 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
-app.get('/', function (req, res) {
+app.get('/', catchAsync(async (req, res) {
 	try {
 	if (typeof req.query.token !== 'undefined') {
 		var response = await fetch(`http://discordapp.com/api/users/@me`,
@@ -644,7 +644,7 @@ app.get('/', function (req, res) {
 	}
 		res.status(200).sendFile(path.join(__dirname, 'login.html'));
 	} catch(e) {res.status(200).send(e.toString());}
-});
+}));
 
 
 var server = app.listen(port, function () {
