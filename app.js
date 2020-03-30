@@ -640,7 +640,7 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 			},
 		});
 		var user = await response.json();
-		req.session.user = user;
+		req.session.user = 'FUCKCKCKCKCKCKCK';
 		req.session.save(function(err) {
 			if(!err) {
 				console.log(req.session.user);
