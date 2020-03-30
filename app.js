@@ -658,9 +658,9 @@ app.get('/', catchAsync(async (req, res) => {
 			res.render('index.ejs', {
 				user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
 			});
-			return;
+		} else {
+			res.status(200).sendFile(path.join(__dirname, 'login.html'));
 		}
-		res.status(200).sendFile(path.join(__dirname, 'login.html'));
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
