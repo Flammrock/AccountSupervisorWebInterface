@@ -608,7 +608,7 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', __dirname);
 
-console.logs(bot.servers);
+console.log(bot.servers);
 
 const CLIENT_ID = '693825334835150918';
 const CLIENT_SECRET = 'd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
