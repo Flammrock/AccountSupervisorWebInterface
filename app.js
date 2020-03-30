@@ -593,10 +593,12 @@ var session = require('express-session');
 const fetch = require('node-fetch');
 const btoa = require('btoa');
 var app = express();
+app.enable('trust proxy');
 app.use(session({
 	secret: 'b50cb7e9-9a67-406b-8bc3-01d65208e710',
 	resave: true,
 	name: "accountsupervisorwebinterface",
+	proxy : true,
 	saveUninitialized: true,
 	cookie: {
 		secure: true,
@@ -640,10 +642,9 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 			},
 		});
 		var user = await response.json();
-		req.session.user = 'FUCKCKCKCKCKCKCK';
+		req.session.user = user;
 		req.session.save(function(err) {
 			if(!err) {
-				console.log(req.session.user,err);
 				res.redirect("/");
 			} else {
 				res.status(200).send(err.toString());
