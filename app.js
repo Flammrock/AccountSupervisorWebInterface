@@ -594,10 +594,14 @@ const fetch = require('node-fetch');
 const btoa = require('btoa');
 var app = express();
 app.use(session({
-	secret: 'keyboard cat fffdsrr',
-	resave: false,
+	secret: 'b50cb7e9-9a67-406b-8bc3-01d65208e710',
+	resave: true,
+	name: "accountsupervisorwebinterface",
 	saveUninitialized: true,
-	cookie: { secure: true }
+	cookie: {
+		secure: true,
+		maxAge: 6000000
+	}
 }));
 app.set('view engine', 'ejs');
 
