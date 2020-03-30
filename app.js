@@ -618,43 +618,38 @@ app.get('/api/discord/login', (req, res) => {
 
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	try {
-	var code = req.query.code;
-	var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
-	var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${creds}`,
-      },
-    });
-  var json = await response.json();
-  res.redirect(`/?token=${json.access_token}`);
+		var code = req.query.code;
+		var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
+		var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
+		{
+			method: 'POST',
+			headers: {
+				Authorization: `Basic ${creds}`,
+			},
+		});
+		var json = await response.json();
+		var response = await fetch(`http://discordapp.com/api/users/@me`,
+		{
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${json.access_token}`,
+			},
+		});
+		var user = await response.json();
+		req.session.user = user;
+		console.log(req.session.user);
+		res.redirect(`/`);
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
-	if (req.session.user) {
-		res.render('index.ejs', {
-			user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
-		});
-		return;
-	} else if (typeof req.query.token !== 'undefined') {
-		var response = await fetch(`http://discordapp.com/api/users/@me`,
-		{
-		  method: 'POST',
-		  headers: {
-			Authorization: req.query.token,
-		  },
-		});
-		var json = await response.json();
-		req.query.token = null;
-		delete req.query.token;
-		console.log(json);
-		req.session.user = json;
-		res.redirect('/');
-		return;
-	}
+		if (req.session.user) {
+			res.render('index.ejs', {
+				user: JSON.stringify(req.session.user).replace(/'/g,'\\\'')
+			});
+			return;
+		}
 		res.status(200).sendFile(path.join(__dirname, 'login.html'));
 	} catch(e) {res.status(200).send(e.toString());}
 }));
