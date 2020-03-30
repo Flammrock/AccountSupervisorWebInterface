@@ -598,11 +598,20 @@ const CLIENT_ID = '693825334835150918';
 const CLIENT_SECRET = 'd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
 const redirect = encodeURIComponent('https://accountsupervisorwebinterface.herokuapp.com/api/discord/callback');
 
+const catchAsyncErrors = fn => (
+  (req, res, next) => {
+    const routePromise = fn(req, res, next);
+    if (routePromise.catch) {
+      routePromise.catch(err => next(err));
+    }
+  }
+);
+
 app.get('/api/discord/login', (req, res) => {
   res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify&response_type=code&redirect_uri=${redirect}`);
 });
 
-app.get('/api/discord/callback', (req, res) => {
+app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	try {
   var code = req.query.code;
   var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
@@ -616,7 +625,7 @@ app.get('/api/discord/callback', (req, res) => {
   var json = response.json();
   res.redirect(`/?token=${json.access_token}`);
 	} catch(e) {res.status(200).send(e.toString());}
-});
+}));
 
 app.get('/', function (req, res) {
 	res.status(200).sendFile(path.join(__dirname, 'index.html'));
