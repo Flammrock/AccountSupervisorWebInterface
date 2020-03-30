@@ -610,6 +610,15 @@ app.set('views', __dirname);
 
 console.log(bot.servers);
 
+
+bot.on('ready', () => {
+	console.log(`Logged in as ${bot.user.tag}!`);
+	console.log(bot);
+	console.log(bot.servers);
+});
+bot.login(TOKEN);
+
+
 const CLIENT_ID = '693825334835150918';
 const CLIENT_SECRET = 'd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
 const redirect = encodeURIComponent('https://accountsupervisorwebinterface.herokuapp.com/api/discord/callback');
