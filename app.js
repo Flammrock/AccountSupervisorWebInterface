@@ -613,7 +613,7 @@ app.get('/api/discord/callback', (req, res) => {
     });
   var json = response.json();
   res.redirect(`/?token=${json.access_token}`);
-	} catch(e) {res.status(200).send(e.toString(););}
+	} catch(e) {res.status(200).send(e.toString());}
 });
 
 app.get('/', function (req, res) {
