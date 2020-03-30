@@ -12,8 +12,10 @@
   <body>
 	You are connected!<br />
     <script type="text/javascript">
-      var test = '<%- JSON.stringify(user).replace(/'/g,'\\\'') %>';
-	  console.log(test);
+      var user = JSON.parse('<%- JSON.stringify(user).replace(/'/g,'\\\'') %>');
+	  var botguilds = JSON.parse('<%- JSON.stringify(guilds).replace(/'/g,'\\\'') %>');
+	  console.log(user);
+	  console.log(botguilds);
     </script>
   </body>
 </html>

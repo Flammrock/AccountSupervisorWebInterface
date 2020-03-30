@@ -613,8 +613,6 @@ console.log(bot.servers);
 
 bot.on('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`);
-	console.log(bot);
-	console.log(bot.servers);
 });
 bot.login(TOKEN);
 
@@ -631,7 +629,7 @@ const catchAsync = fn => ((req, res, next) => {
 });
 
 app.get('/api/discord/login', (req, res) => {
-  res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify&response_type=code&redirect_uri=${redirect}`);
+  res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify%20guilds&response_type=code&redirect_uri=${redirect}`);
 });
 
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
@@ -667,10 +665,18 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
-		console.log(req.session);
+		var guilds = [];
+		bot.guilds.cache.forEach(guild => {
+			guilds.push({
+				id: guild.id,
+				name: guild.name,
+				icon: guild.icon
+			});
+		});
 		if (req.session.user) {
 			res.render('index.ejs', {
-				user: req.session.user
+				user: req.session.user,
+				guilds: guilds
 			});
 		} else {
 			res.status(200).sendFile(path.join(__dirname, 'login.html'));
