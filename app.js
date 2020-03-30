@@ -643,6 +643,7 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 		req.session.user = user;
 		req.session.save(function(err) {
 			if(!err) {
+				console.log(req.session.user);
 				res.redirect("/");
 			} else {
 				res.status(200).send(err.toString());
