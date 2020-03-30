@@ -651,7 +651,17 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 				Authorization: `Bearer ${json.access_token}`,
 			},
 		});
+		var response2 = await fetch(`http://discordapp.com/api/users/@me/guilds`,
+		{
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${json.access_token}`,
+			},
+		});
 		var user = await response.json();
+		var guilds = await response2.json();
+		user = user || {};
+		user.guilds = guilds || {};
 		req.session.user = user;
 		req.session.save(function(err) {
 			if(!err) {
