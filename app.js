@@ -1,8 +1,8 @@
+// WEB INTERFACE
+
 const Discord = require('discord.js');
 const mysql = require("mysql");
 const bot = new Discord.Client();
-
-console.log(process.env);
 
 
 const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.XoC3CQ.meL6PnRHcv91pS2xnyRytJ3oiZE';
@@ -14,9 +14,9 @@ console.log(DATABASE_PARSE);
 const PREFIX = '+';
 
 const DATABASE = {
-	host:       DATABASE_PARSE[1],
-	user:       DATABASE_PARSE[2],
-	password:   DATABASE_PARSE[3],
+	host:       DATABASE_PARSE[3],
+	user:       DATABASE_PARSE[1],
+	password:   DATABASE_PARSE[2],
 	database:   DATABASE_PARSE[4]
 };
 
@@ -579,47 +579,40 @@ new Command('list_command', function(msg,args) {
 	msg.channel.send(Object.keys(Command.List).join(', '));
 });
 
-//////////////////////////////////////
-//           DISCORD BOT            //
-//////////////////////////////////////
-if (process.env.DYNO.replace('worker','')!=process.env.DYNO) {
-bot.on('ready', () => {
-  console.log(`Logged in as ${bot.user.tag}!`);
-});
 
-bot.on('message', msg => {
-  if (msg.content.substring(0,PREFIX.length)==PREFIX) {
-    var data = new ParserCommand(msg.content);
-	if (Command.isExist(data.name)) {
-		Command.execute(msg,data);
-	}
-  }
-});
-
-bot.login(TOKEN);
-}
 
 //////////////////////////////////////
 //          INTERFACE WEB           //
 //////////////////////////////////////
-if (process.env.DYNO.replace('web','')!=process.env.DYNO) {
+
 	
-	const port = process.env.PORT || 80;
-	var express = require('express');
-	var app = express();
+const port = process.env.PORT || 80;
+var path = require('path');
+var express = require('express');
+var app = express();
 
-	app.get('/', function (req, res) {
-	   res.send('Hello World');
-	})
+const router = express.Router();
 
-	var server = app.listen(port, function () {
-	   var host = server.address().address
-	   var port = server.address().port
+const CLIENT_ID = 693825334835150918;
+const CLIENT_SECRET = 'd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
+const redirect = encodeURIComponent('https://accountsupervisorwebinterface.herokuapp.com/api/discord/callback');
+
+router.get('/api/discord/login', (req, res) => {
+  res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify&response_type=code&redirect_uri=${redirect}`);
+});
+
+app.get('/', function (req, res) {
+	res.status(200).sendFile(path.join(__dirname, 'index.html'));
+});
+
+
+var server = app.listen(port, function () {
+	var host = server.address().address
+	var port = server.address().port
 	   
-	   console.log("Example app listening at http://%s:%s", host, port)
-	});
+	console.log("Example app listening at http://%s:%s", host, port)
+});
 	
-}
 
 
 
