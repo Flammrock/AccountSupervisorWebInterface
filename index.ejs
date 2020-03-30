@@ -3,9 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>AccountSupervisor - WebInterface</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       html, body {
-        background: #2E3136;
+        background: url(bg.jpg) center no-repeat;
+		background-size: cover;
       }
 	  html,body{
 	  height:100%;
@@ -19,17 +21,21 @@
 	.container{
 	  height:100%;
 	  display:flex;
+	  flex-direction: column;
 	  align-items:center;
 	  justify-content:center;
 	}
-	.main{
+	.s{
+	  display: block;
 	  margin:1rem;
 	  max-width:350px;
-	  width:50%;  
-	  height:250px;
+	  border-radius: 8px;
+	  width:50%;
+	  background: #18191c;
 	}
+	.main,.footer {padding: 10px;}
 	@media(max-width:34em){
-	  .main{
+	  .s{
 		min-width:150px;
 		width:auto;
 	  }
@@ -41,7 +47,7 @@
 	.dropdown-select {
 		background-image: linear-gradient(to bottom, rgba(24, 25, 28, 0.25) 0%, rgba(24, 25, 28, 0) 100%);
 		background-repeat: repeat-x;
-		background-color: #18191c;
+		background-color: #28292E;
 		border-radius: 6px;
 		border: solid 1px #3F4248;
 		box-shadow: 0px 2px 5px 0px rgba(24, 25, 28, 0.5);
@@ -69,7 +75,7 @@
 	}
 
 	.dropdown-select:focus {
-		background-color: #25272B;
+		background-color: #2F3137;
 	}
 
 	.dropdown-select:hover {
@@ -78,7 +84,7 @@
 
 	.dropdown-select:active,
 	.dropdown-select.open {
-		background-color: #18191c !important;
+		background-color: #2F3137 !important;
 		border-color: #222;
 		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) inset;
 	}
@@ -134,7 +140,7 @@
 		-webkit-transform-origin: 50% 0;
 		transform-origin: 50% 0;
 		box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.09);
-		background-color: #18191c;
+		background-color: #2F3137;
 		border-radius: 6px;
 		margin-top: 4px;
 		padding: 3px 0;
@@ -212,6 +218,30 @@
 	.dropdown-select a:hover {
 		color: #ccc;
 	}
+	
+	.icon {
+		position: relative;
+		display: inline-block;
+		width:32px;
+		height:32px;
+		background: #545762;
+		border-radius: 50%;
+		margin: auto 10px auto 0;
+		vertical-align: middle;
+		overflow: hidden;
+	}
+	.icon .im {
+		position: absolute;
+		width:100%;
+		height:100%;
+	}
+	
+	.footer {
+		position: relative;
+		width:calc(100% - 20px);
+		background: #2f3136;
+		border-radius: 0 0 8px 8px;
+	}
 
     </style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -219,25 +249,39 @@
   <body>
 	
 	<div class="container">
+	  <div class="s">
 	  <div class="main">
 		<h2>Sélectionner le serveur:<h2>
 		<select id="select-servers"></select>
 	  </div>
+	  <div style="height:100px;"></div>
+	  <div class="footer">
+		<button class="btn">Accéder</button>
+	  </div>
+	  </div>
 	</div>
 	
     <script type="text/javascript">
-      var user = JSON.parse('<%- JSON.stringify(user).replace(/'/g,'\\\'') %>');
-	  var botguilds = JSON.parse('<%- JSON.stringify(guilds).replace(/'/g,'\\\'') %>');
+      //var user = JSON.parse('<%- JSON.stringify(user).replace(/'/g,'\\\'') %>');
+	  //var botguilds = JSON.parse('<%- JSON.stringify(guilds).replace(/'/g,'\\\'') %>');
+	  var user = JSON.parse('{"id":"627961847248715777","username":"FlammrockTester","avatar":null,"discriminator":"1036","locale":"fr","mfa_enabled":false,"flags":0,"guilds":[{"id":"691097393059463239","name":"Roblox Dev","icon":"a69b7fac332a49ff701caa405441390c","owner":false,"permissions":133693249,"features":[]},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee","owner":false,"permissions":104324673,"features":[]}]}');
+	  var botguilds = JSON.parse('[{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"},{"id":"693824505826639952","name":"AccountSupervisor","icon":"014b876d9212dec84f4a053a79fefbee"}]');
+	  
 	  console.log(user);
 	  console.log(botguilds);
 	  var communs = "";
 	  var index = 1;
 	  for (var i = 0; i < botguilds.length; i++) {
 		for (var j = 0; j < user.guilds.length; j++) {
-			//if (botguilds[i].id==user.guilds[j].id) {
-				communs+='<option value="'+index+'">'+botguilds[i].name+'</option>';
+			if (botguilds[i].id==user.guilds[j].id) {
+				if (botguilds[i].icon!=null) {
+					communs+='<option data-display-icon="https://cdn.discordapp.com/icons/'+botguilds[i].id+'/'+botguilds[i].icon+'.png" value="'+index+'">'+botguilds[i].name+'</option>';
+				} else {
+					communs+='<option value="'+index+'">'+botguilds[i].name+'</option>';
+				}
+				
 				index++;
-			//}
+			}
 		}
 	  }
 	  document.getElementById('select-servers').innerHTML = communs;
@@ -252,7 +296,13 @@
 				dropdown.find('.current').html(selected.data('display-text') || selected.text());
 				options.each(function (j, o) {
 					var display = $(o).data('display-text') || '';
-					dropdown.find('ul').append('<li class="option ' + ($(o).is(':selected') ? 'selected' : '') + '" data-value="' + $(o).val() + '" data-display-text="' + display + '">' + $(o).text() + '</li>');
+					var icon = $(o).data('display-icon') || '';
+					if (icon != '') {
+						icon = '<div class="icon"><div class="im" style="background:url('+icon+') center no-repeat;background-size:cover;"></div></div>';
+					} else {
+						icon = '<div class="icon"></div>';
+					}
+					dropdown.find('ul').append('<li class="option ' + ($(o).is(':selected') ? 'selected' : '') + '" data-value="' + $(o).val() + '" data-display-text="' + display + '">' + icon + $(o).html() + '</li>');
 				});
 			}
 		});
