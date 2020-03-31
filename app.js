@@ -731,7 +731,7 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 								user: req.session.user,
 								shop: JSON.parse(rows[0].data)
 							});
-						catch (e) {
+						} catch (e) {
 							res.status(200).send(err.toString());
 						}
 					}
