@@ -673,11 +673,11 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
-app.get('/:guidId', (req, res) => {
+app.get('/guild/:guildId', (req, res) => {
 	if (req.session.user) {
 		res.status(200).send('200 OK');
 	} else {
-		req.query.path = encodeURIComponent('/' + req.params.guidId);
+		req.query.path = encodeURIComponent('/' + req.params.guildId);
 		res.redirect(url.format({
 			pathname:'/login',
 			query:req.query,
