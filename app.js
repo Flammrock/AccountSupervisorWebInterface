@@ -1254,7 +1254,7 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 }));
 
 
-app.get('api//guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res) => {
+app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res) => {
 	if (req.session.user) {
 		var bankid = escape_mysql(decodeURIComponent(bankid));
 		var shopid = escape_mysql(decodeURIComponent(shopid));
