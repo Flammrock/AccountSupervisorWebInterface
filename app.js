@@ -664,7 +664,7 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 				res.redirect(url.format({
 					   pathname:req.query.path || '/',
 					   query:req.query,
-				})});
+				}));
 			} else {
 				res.status(200).send(err.toString());
 			}
@@ -680,7 +680,7 @@ app.get('/:guidId', (req, res) => {
 		res.redirect(url.format({
 			pathname:'/login',
 			query:req.query,
-		})});
+		}));
 	}
 });
 
