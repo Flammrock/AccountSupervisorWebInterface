@@ -79,6 +79,17 @@ query(`CREATE TABLE IF NOT EXISTS shop (
   console.log('TABLE CREATED!');
 });
 
+query(`CREATE TABLE IF NOT EXISTS items (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  name varchar(50),
+  data text,
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;`, (err,rows) => {
+  if(err) throw err;
+
+  console.log('TABLE CREATED!');
+});
+
 
 
 //////////////////////////////////////
@@ -1243,6 +1254,120 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 }));
 
 
+app.get('/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res) => {
+	if (req.session.user) {
+		var bankid = escape_mysql(decodeURIComponent(bankid));
+		var shopid = escape_mysql(decodeURIComponent(shopid));
+		var itemid = escape_mysql(decodeURIComponent(req.params.itemId));
+		const bot = new Discord.Client();
+		bot.on('ready', () => {
+			var user = req.session.user;
+			var guilds = [];
+			bot.guilds.cache.forEach(guild => {
+				guilds.push(guild);
+			});
+			var isin = false;
+			for (var i = 0; i < guilds.length; i++) {
+				if (guilds[i].id==req.params.guildId) {
+					isin = true;
+					break;
+				}
+			}
+			if (isin) {
+				query('SELECT * FROM shop WHERE name = \''+escape_mysql('name_'+req.params.guildId+'_')+shopid+'\'',function(err,rows){
+					if (rows.length==0) {
+						res.status(200).send(JSON.stringify({error:3,message:'This Shop doesn\'t exist!'}));
+						return;
+					} else {
+						try {
+							var d = JSON.parse(rows[0].data);
+							d.web = typeof d.web !== 'undefined' ? d.web : true;
+							if (d.web) {
+								query('SELECT * FROM items',function(err,rows) {
+									if (rows.length!=0) {
+										var rows2 = {};
+										for (var i = 0; i < rows.length; i++) {
+											var data = JSON.parse(rows[i].data);
+											for (var j = 0; j < data.shops.length; j++) {
+												if (data.shops[j]==shopid) {
+													rows2[rows[i].name.substring(rows[i].name.indexOf('_')+1).substring(rows[i].name.substring(rows[i].name.indexOf('_')+1).indexOf('_')+1)] = data;
+													break;
+												}
+											}
+										}
+										if (typeof shopItems[itemid] !== 'undefined') {
+											var data = shopItems[itemid];
+											query('SELECT * FROM users WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
+												if (rows.length==0) {
+													res.status(200).send(JSON.stringify({error:8,message:'Not Enought Money!'}));
+													return;
+												}
+												var userdata = JSON.parse(rows[0].data);
+												userdata.bank = userdata.bank || {};
+												if (typeof userdata.bank[bankid] === 'undefined') {
+													res.status(200).send(JSON.stringify({error:8,message:'Not Enought Money!'}));
+												} else {
+													if ((parseFloat(userdata.bank[bankid]) || 0.0) < Math.abs(parseFloat(data.price) || 0.0)) {
+														res.status(200).send(JSON.stringify({error:8,message:'Not Enought Money!'}));
+													} else {
+														
+														userdata.inventory = userdata.inventory || {};
+														userdata.inventory.items = userdata.inventory.items || {};
+														
+														var can = false;
+														for (var g = 0; g < d.need.length; g++) {
+															for (var h in userdata.inventory.items) {
+																if (userdata.inventory.items.hasOwnProperty(h)) {
+																	if (h==d.need[g]) {
+																		can = true;
+																		break;
+																	}
+																}
+															}
+															if (can) break;
+														}
+														if (d.need.length==0) can = true;
+														
+														if (can) {
+															userdata.bank[bankid] = (parseFloat(userdata.bank[bankid]) || 0.0) - Math.abs(parseFloat(data.price) || 0.0);
+															if (typeof userdata.inventory.items[itemid] === 'undefined') {
+																userdata.inventory.items[itemid] = 1
+															} else {
+																userdata.inventory.items[itemid] = (parseInt(userdata.inventory.items[itemid]) || 0) + 1;
+															}
+															query('UPDATE users SET data = \''+escape_mysql(JSON.stringify(userdata))+'\' WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
+																res.status(200).send(JSON.stringify({success:0,message:'You did it!'}));
+															});
+														} else {
+															res.status(200).send(JSON.stringify({error:9,message:'You must have one of this item: '+d.need.join(', ')}));
+														}
+													}
+												}
+											})
+											
+										} else {
+											res.status(200).send(JSON.stringify({error:7,message:'This Item is not in this Shop!'}));
+										}
+									} else {
+										res.status(200).send(JSON.stringify({error:6,message:'Not Item in this Shop!'}));
+									}
+								});
+							} else {
+								res.status(200).send(JSON.stringify({error:5,message:'This Shop in not a Web Shop!'}));
+							}
+						} catch (e) {
+							res.status(200).send(JSON.stringify({error:4,message:e.toString()}));
+						}
+					}
+				});
+			} else {
+				res.status(200).send(JSON.stringify({error:2,message:'Bot not in this Server!'}));
+			}
+		});
+	} else {
+		res.status(200).send(JSON.stringify({error:1,message:'Not Connected!'}));
+	}
+});
 
 app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 	if (req.session.user) {
