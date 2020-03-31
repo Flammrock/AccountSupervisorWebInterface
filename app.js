@@ -660,12 +660,15 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 		user = user || {};
 		user.guilds = guilds || {};
 		req.session.user = user;
+		var path = '/';
+		if (req.session.path) {
+			if (typeof req.session.path === 'string') path = req.session.path;
+			req.session.path = null;
+			delete req.session.path;
+		}
 		req.session.save(function(err) {
 			if(!err) {
-				res.redirect(url.format({
-					   pathname:req.query.path || '/',
-					   query:req.query,
-				}));
+				res.redirect(path);
 			} else {
 				res.status(200).send(err.toString());
 			}
@@ -677,17 +680,17 @@ app.get('/guild/:guildId', (req, res) => {
 	if (req.session.user) {
 		res.status(200).send('200 OK');
 	} else {
-		req.query.path = encodeURIComponent('/' + req.params.guildId);
-		res.redirect(url.format({
-			pathname:'/login',
-			query:req.query,
-		}));
+		req.session.path = '/guild/' + req.params.guildId;
+		req.session.save(function(err) {
+			if(!err) {
+				res.redirect('/');
+			} else {
+				res.status(200).send(err.toString());
+			}
+		});
 	}
 });
 
-app.get('/login', (req, res) => {
-	res.status(200).sendFile(path.join(__dirname, 'login.html'));
-});
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
