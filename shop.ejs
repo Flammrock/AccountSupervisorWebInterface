@@ -71,16 +71,86 @@
 		transform: scale(1.2) !important;
 		z-index:999999999 !important;
 	}
+	
+	.close {
+	  position: absolute;
+	  right: 32px;
+	  top: 32px;
+	  width: 32px;
+	  height: 32px;
+	  opacity: 0.3;
+	}
+	.close:hover {
+	  opacity: 1;
+	}
+	.close:before, .close:after {
+	  position: absolute;
+	  left: 15px;
+	  content: ' ';
+	  height: 33px;
+	  width: 2px;
+	  background-color: #f00;
+	}
+	.close:before {
+	  transform: rotate(45deg);
+	}
+	.close:after {
+	  transform: rotate(-45deg);
+	}
+	
+	.lds-dual-ring {
+	  position: fixed;
+	  z-index: 9999999999999999;
+	  top:50%;
+	  left:50%;
+	  display: inline-block;
+	  width: 80px;
+	  height: 80px;
+	  transform:translate(-50%,-50%);
+	}
+	.lds-dual-ring:after {
+	  content: " ";
+	  display: block;
+	  width: 64px;
+	  height: 64px;
+	  margin: 8px;
+	  border-radius: 50%;
+	  border: 6px solid #fff;
+	  border-color: #fff transparent #fff transparent;
+	  animation: lds-dual-ring 1.2s linear infinite;
+	}
+	@keyframes lds-dual-ring {
+	  0% {
+		transform: rotate(0deg);
+	  }
+	  100% {
+		transform: rotate(360deg);
+	  }
+	}
+
+	#loader {
+		position: fixed;
+		opacity: 1;
+		transition: opacity 0.5s ease;
+		z-index: 9999999999999999;
+		width:100%;
+		height:100%;
+		top:0;
+		left:0;
+		background: #23272a;
+	}
 
     </style>
   </head>
   <body>
+  
+  <div id="loader"><div class="lds-dual-ring"></div></div>
 	
 	
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg bg-light fixed-top" style="z-index:9999999999999;">
     <div class="container">
-      <span>Start Bootstrap</span>
+      <span id="nametitle"></span>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -150,6 +220,7 @@
 				<h3 class="card-title">Choice Bank</h3>
 				<input type="text" id="buy-card-bank-input" class="form-control" placeholder="Bank Name"><br />
 				<button style="margin:0;padding: 10px 20px;" id="buy-card-button" class="btn">Buy!</button>
+				<div style="position:absolute;top:5px;right:5px;" onclick="document.getElementById('buy-card').style.opacity=0;setTimeout(function(){document.getElementById('buy-card').style.display='none';},210);" class="close"></div>
 			</div>
 		</div>
 	</div>
@@ -160,9 +231,9 @@
 	<div class="container">
 		<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999999999999999999;" class="card mt-4">
 			<div class="card-body">
-				<h3 class="card-title">Error during transaction</h3>
+				<h3 class="card-title" id="buy-card-result-title">Error during transaction</h3>
 				<p id="buy-card-result-message"></p>
-				<button style="margin:0;padding: 10px 20px;" onclick="document.getElementById('buy-card-result').style.opacity=0;setTimeout(function(){document.getElementById('buy-card-result').style.display='none';},210);" class="btn">Ok</button>
+				<button style="margin:0;padding: 10px 20px;" onclick="document.getElementById('buy-card').style.opacity=1;document.getElementById('buy-card-result').style.opacity=0;setTimeout(function(){document.getElementById('buy-card-result').style.display='none';},210);" class="btn">Ok</button>
 			</div>
 		</div>
 	</div>
@@ -178,15 +249,43 @@
 
 	
     <script type="text/javascript">
-      var user = JSON.parse('<%- JSON.stringify(user).replace(/'/g,'\\\'') %>');
-	  var shopName = '<%- shopName %>';
-	  var shopItems = JSON.parse('<%- JSON.stringify(shopItems).replace(/'/g,'\\\'') %>');
-	  var guildId = '<%- guildId %>';
+      //var user = JSON.parse('<%- JSON.stringify(user).replace(/'/g,'\\\'') %>');
+	  //var shopName = '<%- shopName %>';
+	  //var guildName = '<%- guildName %>';
+	  //var shopItems = JSON.parse('<%- JSON.stringify(shopItems).replace(/'/g,'\\\'') %>');
+	  //var guildId = '<%- guildId %>';
+	  // On évite les erreurs de CORS du client en passant par un serveur
+      (function() {
+          var cors_api_host = 'cors-anywhere.herokuapp.com';
+          var cors_api_url = 'https://' + cors_api_host + '/';
+          var slice = [].slice;
+          var origin = window.location.protocol + '//' + window.location.host;
+          var open = XMLHttpRequest.prototype.open;
+          XMLHttpRequest.prototype.open = function() {
+              var args = slice.call(arguments);
+              var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
+              if (targetOrigin && targetOrigin[0].toLowerCase() !== origin &&
+                  targetOrigin[1] !== cors_api_host) {
+                  args[1] = cors_api_url + args[1];
+              }
+              return open.apply(this, args);
+          };
+      })();
 	  
-	  //var guildId = '';
-	  //var user = JSON.parse('{"id":"627961847248715777","username":"FlammrockTester","avatar":null,"discriminator":"1036","locale":"fr","mfa_enabled":false,"flags":0,"guilds":[{"id":"691097393059463239","name":"Roblox Dev","icon":"a69b7fac332a49ff701caa405441390c","owner":false,"permissions":2147483647,"features":[]},{"id":"693824505826639952","name":"AccountSupervisor","icon":"f084152dd7f282b1ce1cd62860f0c83f","owner":false,"permissions":104324673,"features":[]}]}');
-	  //var shopName = 'myshop';
-	  //var shopItems = JSON.parse('{"bonjour2":{"price":0,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour3":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour4":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour5":{"price":9.99,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour6":{"price":50,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour7":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour8":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour9":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour10":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour11":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour12":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour13":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour14":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour15":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"}}');
+	  window.onload = function() {
+		document.getElementById('loader').style.opacity = 0;
+		setTimeout(function(){
+			document.getElementById('loader').style.display = 'none';
+		},510);
+	  };
+	  
+	  var guildId = '693824505826639952';
+	  var guildName = 'AccountSupervisor';
+	  var user = JSON.parse('{"id":"627961847248715777","username":"FlammrockTester","avatar":null,"discriminator":"1036","locale":"fr","mfa_enabled":false,"flags":0,"guilds":[{"id":"691097393059463239","name":"Roblox Dev","icon":"a69b7fac332a49ff701caa405441390c","owner":false,"permissions":2147483647,"features":[]},{"id":"693824505826639952","name":"AccountSupervisor","icon":"f084152dd7f282b1ce1cd62860f0c83f","owner":false,"permissions":104324673,"features":[]}]}');
+	  var shopName = 'myshop';
+	  var shopItems = JSON.parse('{"bonjour2":{"price":0,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour3":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour4":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour5":{"price":9.99,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour6":{"price":50,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour7":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour8":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour9":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour10":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour11":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour12":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour13":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour14":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"},"bonjour15":{"price":5,"shops":["myshop"],"type":"","image":"","description":"No Description"}}');
+
+	  document.getElementById('nametitle').innerHTML = guildName+' - '+shopName;
 
 	  function create_item_view(name,data) {
 	  var divparent = document.createElement('div');
@@ -238,7 +337,17 @@
 					if (xhr.readyState == XMLHttpRequest.DONE) {console.log(xhr.responseText);
 						try {
 							var data = JSON.parse(xhr.responseText);
-							console.log(data);
+							document.getElementById('buy-card').style.opacity=0;
+							document.getElementById('buy-card-result').style.opacity=0;
+							document.getElementById('buy-card-result').style.display='flex';
+							document.getElementById('buy-card-result').style.opacity=1;
+							document.getElementById('buy-card-result-message').innerHTML = data.message;
+							if (data.error) {
+								document.getElementById('buy-card-result-title').innerHTML = 'Error during transaction';
+							} else {
+								document.getElementById('buy-card').style.display = 'none';
+								document.getElementById('buy-card-result-title').innerHTML = 'Successful Purchase';
+							}
 						} catch (e) {
 							alert('Undefined Error: '+e.toString());
 						}
