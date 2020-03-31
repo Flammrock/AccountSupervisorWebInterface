@@ -678,7 +678,27 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 
 app.get('/guild/:guildId', (req, res) => {
 	if (req.session.user) {
-		res.status(200).send('200 OK');
+		const bot = new Discord.Client();
+		bot.on('ready', () => {
+			var user = req.session.user;
+			var guilds = [];
+			bot.guilds.cache.forEach(guild => {
+				guilds.push(guild);
+			});
+			var isin = false;
+			for (var i = 0; i < guilds.length; i++) {
+				if (guilds[i].id==req.params.guildId) {
+					isin = true;
+					break;
+				}
+			}
+			if (isin) {
+				res.status(200).send('OK 200');
+			} else {
+				res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=8&guild_id=${req.params.guildId}`);
+			}
+		});
+		bot.login(TOKEN);
 	} else {
 		req.session.path = '/guild/' + req.params.guildId;
 		req.session.save(function(err) {
