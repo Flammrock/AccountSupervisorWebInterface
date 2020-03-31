@@ -321,19 +321,19 @@
 		  button.style.cssText = 'position:absolute;top:10px;right:10px;';
 		  button.innerHTML = 'Buy!';
 		  button.onclick = function() {
-		    if (document.getElementById('buy-card-bank-input').value.trim()=="") {
-				document.getElementById('buy-card').style.opacity=0;
-				document.getElementById('buy-card-result').style.opacity=0;
-				document.getElementById('buy-card-result').style.display='flex';
-				document.getElementById('buy-card-result').style.opacity=1;
-				document.getElementById('buy-card-result-message').innerHTML = "Please indicate the name of the bank";
-				document.getElementById('buy-card-result-title').innerHTML = 'Error during transaction';
-				return;
-			}
 		    document.getElementById('buy-card').style.opacity = 0;
 			document.getElementById('buy-card').style.display = 'flex';
 			document.getElementById('buy-card').style.opacity = 1;
 			document.getElementById('buy-card-button').onclick = function() {
+				if (document.getElementById('buy-card-bank-input').value.trim()=="") {
+					document.getElementById('buy-card').style.opacity=0;
+					document.getElementById('buy-card-result').style.opacity=0;
+					document.getElementById('buy-card-result').style.display='flex';
+					document.getElementById('buy-card-result').style.opacity=1;
+					document.getElementById('buy-card-result-message').innerHTML = "Please indicate the name of the bank";
+					document.getElementById('buy-card-result-title').innerHTML = 'Error during transaction';
+					return;
+				}
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
 					
