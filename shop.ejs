@@ -243,7 +243,7 @@
 						}
 					}
 				}
-				xhr.open('GET', 'https://accountsupervisorwebinterface.herokuapp.com/guild/'+guildId+'/shop/'+encodeURIComponent(shopName)+'/item/'+encodeURIComponent(name)+'/bank/'+encodeURIComponent(document.getElementById('buy-card-bank-input').value), true);
+				xhr.open('GET', 'https://accountsupervisorwebinterface.herokuapp.com/api/guild/'+guildId+'/shop/'+encodeURIComponent(shopName)+'/item/'+encodeURIComponent(name)+'/bank/'+encodeURIComponent(document.getElementById('buy-card-bank-input').value), true);
 				xhr.send(null);
 			}
 		  }
