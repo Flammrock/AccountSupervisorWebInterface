@@ -1303,7 +1303,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 													break;
 												}
 											}
-										}onsole.log('FUCKKKzrterh	wesgsyhsshshshshhs9');
+										}console.log('FUCKKKzrterh	wesgsyhsshshshshhs9');
 										console.log('FUCKKKKKKKK9');console.log(itemid,shopItems);
 										if (typeof shopItems[itemid] !== 'undefined') {
 											console.log('FUCKKKKKKKK10');
