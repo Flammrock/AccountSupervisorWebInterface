@@ -45,8 +45,8 @@ function query(SQL,fn) {
 function escape_mysql(s) {return s.replace(/'/g,"''");}
 query();
 
-/*
-connection.query(`CREATE TABLE users (
+
+connection.query(`CREATE TABLE IF NOT EXISTS users (
   id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(50),
   data text,
@@ -55,9 +55,9 @@ connection.query(`CREATE TABLE users (
   if(err) throw err;
 
   console.log('TABLE CREATED!');
-});*/
-/*
-connection.query(`CREATE TABLE bank (
+});
+
+connection.query(`CREATE TABLE IF NOT EXISTS bank (
   id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(50),
   data text,
@@ -66,7 +66,19 @@ connection.query(`CREATE TABLE bank (
   if(err) throw err;
 
   console.log('TABLE CREATED!');
-});*/
+});
+
+connection.query(`CREATE TABLE IF NOT EXISTS shop (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  name varchar(50),
+  data text,
+  PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;`, (err,rows) => {
+  if(err) throw err;
+
+  console.log('TABLE CREATED!');
+});
+
 
 
 //////////////////////////////////////
@@ -691,6 +703,65 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
+
+
+app.get('/guild/:guildId/shop/:shopId', (req, res) => {
+	if (req.session.user) {
+		const bot = new Discord.Client();
+		bot.on('ready', () => {
+			var user = req.session.user;
+			var guilds = [];
+			bot.guilds.cache.forEach(guild => {
+				guilds.push(guild);
+			});
+			var isin = false;
+			for (var i = 0; i < guilds.length; i++) {
+				if (guilds[i].id==req.params.guildId) {
+					isin = true;
+					break;
+				}
+			}
+			if (isin) {
+				query('SELECT * FROM shop WHERE name = \''+escape_mysql(req.params.shopId)+'\'',function(err,rows){
+					if (rows.length==0) {
+						res.status(200).sendFile(path.join(__dirname, 'noshop.html'));
+					} else {
+						try {
+							res.render('index.ejs', {
+								user: req.session.user,
+								shop: JSON.parse(rows[0].data)
+							});
+						catch (e) {
+							res.status(200).send(err.toString());
+						}
+					}
+				});
+			} else {
+				var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+				req.session.pathn = fullUrl;
+				req.session.save(function(err) {
+					if(!err) {
+						res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=8&guild_id=${req.params.guildId}&redirect_uri=${redirect}`);
+					} else {
+						res.status(200).send(err.toString());
+					}
+				});
+			}
+		});
+		bot.login(TOKEN);
+	} else {
+		req.session.path = req.protocol + '://' + req.get('host') + req.originalUrl;
+		req.session.save(function(err) {
+			if(!err) {
+				res.redirect('/');
+			} else {
+				res.status(200).send(err.toString());
+			}
+		});
+	}
+});
+
+
 app.get('/guild/:guildId', (req, res) => {
 	if (req.session.user) {
 		const bot = new Discord.Client();
@@ -723,7 +794,7 @@ app.get('/guild/:guildId', (req, res) => {
 		});
 		bot.login(TOKEN);
 	} else {
-		req.session.path = '/guild/' + req.params.guildId;
+		req.session.path = req.protocol + '://' + req.get('host') + req.originalUrl;
 		req.session.save(function(err) {
 			if(!err) {
 				res.redirect('/');
