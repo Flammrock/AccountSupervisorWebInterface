@@ -732,7 +732,7 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 								shop: JSON.parse(rows[0].data)
 							});
 						} catch (e) {
-							res.status(200).send(err.toString());
+							res.status(200).send(e.toString());
 						}
 					}
 				});
