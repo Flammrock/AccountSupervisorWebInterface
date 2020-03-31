@@ -695,7 +695,8 @@ app.get('/guild/:guildId', (req, res) => {
 			if (isin) {
 				res.status(200).send('OK 200');
 			} else {
-				res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=8&guild_id=${req.params.guildId}`);
+				var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+				res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=8&guild_id=${req.params.guildId}&redirect_uri=${fullUrl}`);
 			}
 		});
 		bot.login(TOKEN);
