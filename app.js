@@ -661,13 +661,32 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 		req.session.user = user;
 		req.session.save(function(err) {
 			if(!err) {
-				res.redirect("/");
+				res.redirect(url.format({
+					   pathname:req.query.path || '/',
+					   query:req.query,
+				})});
 			} else {
 				res.status(200).send(err.toString());
 			}
 		});
 	} catch(e) {res.status(200).send(e.toString());}
 }));
+
+app.get('/:guidId', (req, res) => {
+	if (req.session.user) {
+		res.status(200).send('200 OK');
+	} else {
+		req.query.path = '/' + req.params.guidId;
+		res.redirect(url.format({
+			pathname:'/login',
+			query:req.query,
+		})});
+	}
+});
+
+app.get('/login', (req, res) => {
+	res.status(200).sendFile(path.join(__dirname, 'login.html'));
+});
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
