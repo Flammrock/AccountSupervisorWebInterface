@@ -1294,16 +1294,16 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 									console.log('FUCKKKKKKKK7');
 									if (rows.length!=0) {
 										console.log('FUCKKKKKKKK8');
-										var rows2 = {};
+										var shopItems = {};
 										for (var i = 0; i < rows.length; i++) {
 											var data = JSON.parse(rows[i].data);
 											for (var j = 0; j < data.shops.length; j++) {
 												if (data.shops[j]==shopid) {
-													rows2[escape_mysql(rows[i].name.substring(rows[i].name.indexOf('_')+1).substring(rows[i].name.substring(rows[i].name.indexOf('_')+1).indexOf('_')+1))] = data;
+													shopItems[escape_mysql(rows[i].name.substring(rows[i].name.indexOf('_')+1).substring(rows[i].name.substring(rows[i].name.indexOf('_')+1).indexOf('_')+1))] = data;
 													break;
 												}
 											}
-										}
+										}onsole.log('FUCKKKzrterh	wesgsyhsshshshshhs9');
 										console.log('FUCKKKKKKKK9');console.log(itemid,shopItems);
 										if (typeof shopItems[itemid] !== 'undefined') {
 											console.log('FUCKKKKKKKK10');
