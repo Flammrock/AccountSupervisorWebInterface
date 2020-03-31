@@ -1365,6 +1365,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 				res.status(200).send(JSON.stringify({error:2,message:'Bot not in this Server!'}));
 			}
 		});
+		bot.login(TOKEN);
 	} else {
 		res.status(200).send(JSON.stringify({error:1,message:'Not Connected!'}));
 	}
