@@ -631,6 +631,21 @@ app.get('/api/discord/login', (req, res) => {
 
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
 	try {
+		if (req.session.pathn) {
+			if (typeof req.session.pathn === 'string') {
+				var path = req.session.pathn;
+				req.session.pathn = null;
+				delete req.session.pathn;
+				req.session.save(function(err) {
+					if(!err) {
+						res.redirect(path);
+					} else {
+						res.status(200).send(err.toString());
+					}
+				});
+				return;
+			}
+		}
 		var code = req.query.code;
 		var creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
 		var response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
@@ -696,7 +711,14 @@ app.get('/guild/:guildId', (req, res) => {
 				res.status(200).send('OK 200');
 			} else {
 				var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-				res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=8&guild_id=${req.params.guildId}&redirect_uri=${fullUrl}`);
+				req.session.pathn = fullUrl;
+				req.session.save(function(err) {
+					if(!err) {
+						res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=8&guild_id=${req.params.guildId}&redirect_uri=${redirect}`);
+					} else {
+						res.status(200).send(err.toString());
+					}
+				});
 			}
 		});
 		bot.login(TOKEN);
