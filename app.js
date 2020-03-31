@@ -1299,12 +1299,12 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 											var data = JSON.parse(rows[i].data);
 											for (var j = 0; j < data.shops.length; j++) {
 												if (data.shops[j]==shopid) {
-													rows2[rows[i].name.substring(rows[i].name.indexOf('_')+1).substring(rows[i].name.substring(rows[i].name.indexOf('_')+1).indexOf('_')+1)] = data;
+													rows2[escape_mysql(rows[i].name.substring(rows[i].name.indexOf('_')+1).substring(rows[i].name.substring(rows[i].name.indexOf('_')+1).indexOf('_')+1))] = data;
 													break;
 												}
 											}
 										}
-										console.log('FUCKKKKKKKK9');
+										console.log('FUCKKKKKKKK9');console.log(itemid,shopItems);
 										if (typeof shopItems[itemid] !== 'undefined') {
 											console.log('FUCKKKKKKKK10');
 											var data = shopItems[itemid];
