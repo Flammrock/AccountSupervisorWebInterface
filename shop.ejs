@@ -234,7 +234,8 @@
 			document.getElementById('buy-card-button').onclick = function() {
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
-					if (xhr.readyState == XMLHttpRequest.DONE) {
+					
+					if (xhr.readyState == XMLHttpRequest.DONE) {console.log(xhr.responseText);
 						try {
 							var data = JSON.parse(xhr.responseText);
 							console.log(data);
