@@ -2,7 +2,7 @@
 
 const Discord = require('discord.js');
 const mysql = require("mysql");
-const bot = new Discord.Client();
+
 
 
 const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.XoLXNQ.hFJvWBxgMR3gd7_A6iHSEOcDZwU';
@@ -609,13 +609,8 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname);
 app.use(express.static(__dirname));
 
-console.log(bot.servers);
 
 
-bot.on('ready', () => {
-	console.log(`Logged in as ${bot.user.tag}!`);
-});
-bot.login(TOKEN);
 
 
 const CLIENT_ID = '693825334835150918';
@@ -676,22 +671,26 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 
 app.get('/', catchAsync(async (req, res) => {
 	try {
-		var guilds = [];
-		bot.guilds.cache.forEach(guild => {
-			guilds.push({
-				id: guild.id,
-				name: guild.name,
-				icon: guild.icon
+		const bot = new Discord.Client();
+		bot.on('ready', () => {
+			var guilds = [];
+			bot.guilds.cache.forEach(guild => {
+				guilds.push({
+					id: guild.id,
+					name: guild.name,
+					icon: guild.icon
+				});
 			});
+			if (req.session.user) {
+				res.render('index.ejs', {
+					user: req.session.user,
+					guilds: guilds
+				});
+			} else {
+				res.status(200).sendFile(path.join(__dirname, 'login.html'));
+			}
 		});
-		if (req.session.user) {
-			res.render('index.ejs', {
-				user: req.session.user,
-				guilds: guilds
-			});
-		} else {
-			res.status(200).sendFile(path.join(__dirname, 'login.html'));
-		}
+		bot.login(TOKEN);
 	} catch(e) {res.status(200).send(e.toString());}
 }));
 
