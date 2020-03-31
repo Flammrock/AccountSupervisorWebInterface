@@ -677,7 +677,7 @@ app.get('/:guidId', (req, res) => {
 	if (req.session.user) {
 		res.status(200).send('200 OK');
 	} else {
-		req.query.path = '/' + req.params.guidId;
+		req.query.path = encodeURIComponent('/' + req.params.guidId);
 		res.redirect(url.format({
 			pathname:'/login',
 			query:req.query,
