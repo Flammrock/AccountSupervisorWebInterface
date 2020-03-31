@@ -1399,6 +1399,7 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 										res.render('shop.ejs', {
 											user: req.session.user,
 											shopName: req.params.shopId,
+											guildId: req.params.guildId,
 											shopItems: {}
 										});
 									} else {
