@@ -8,12 +8,38 @@
       html, body {
         background: #2E3136;
       }
+	  .btn {
+		color: #fff;
+		background-color: #7289da;
+		padding: 10px;
+		margin: 0 10px;
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+		-webkit-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		border: none;
+		border-radius: 3px;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 16px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	  }
+	  btn:hover {
+		color: #fff;
+	  }
     </style>
   </head>
   <body>
-	<a href="/api/discord/login">Login through discord</a>
-    <script type="text/javascript">
-      var test = null;
-    </script>
+	<button style="position:fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); padding: 15px;" class="btn" onclick="document.location='/api/discord/login';">Login through discord</button>
   </body>
 </html>
