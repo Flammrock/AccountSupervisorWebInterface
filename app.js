@@ -1313,33 +1313,51 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 													} else {
 														userdata.inventory = userdata.inventory || {};
 														userdata.inventory.items = userdata.inventory.items || {};
+														userdata.inventory.itemstype = userdata.inventory.itemstype || {};
 														
 														var can = false;
-														for (var g = 0; g < d.need.length; g++) {
-															for (var h in userdata.inventory.items) {
-																if (userdata.inventory.items.hasOwnProperty(h)) {
-																	if (h==d.need[g]) {
+														for (var t = 0; t < d.needWeb.length; t++) {
+															for (var p in userdata.inventory.items) {
+																if (userdata.inventory.items.hasOwnProperty(p)) {
+																	if (p==escape_mysql(d.needWeb[t])) {
 																		can = true;
 																		break;
 																	}
 																}
 															}
-															if (can) break;
 														}
-														if (d.need.length==0) can = true;
-														if (can) {
-															userdata.bank[bankid] = (parseFloat(userdata.bank[bankid]) || 0.0) - Math.abs(parseFloat(data.price) || 0.0);
-															if (typeof userdata.inventory.items[itemid] === 'undefined') {
-																userdata.inventory.items[itemid] = 1
-															} else {
-																userdata.inventory.items[itemid] = (parseInt(userdata.inventory.items[itemid]) || 0) + 1;
+														if (d.needWeb.length==0) can = true;
+														var cantype = false;
+														for (var t = 0; t < d.needWebType.length; t++) {
+															for (var p in userdata.inventory.itemstype) {
+																if (userdata.inventory.itemstype.hasOwnProperty(p)) {
+																	if (p==d.needWebType[t]) {
+																		cantype = true;
+																		break;
+																	}
+																}
 															}
-															query('UPDATE users SET data = \''+escape_mysql(JSON.stringify(userdata))+'\' WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
-																res.status(200).send(JSON.stringify({success:0,message:user.username+', you have successfully acquired the '+itemid+' item'}));
-															});
-														} else {
-															res.status(200).send(JSON.stringify({error:9,message:'You must have one of this item: '+d.need.join(', ')}));
 														}
+														if (d.needWebType.length==0) cantype = true;
+																
+														if (!can) {
+															res.status(200).send(JSON.stringify({error:9,message:'You must have one of this Items: '+d.needWeb.join(', ')}));
+															return;
+														}
+														if (!cantype) {
+															res.status(200).send(JSON.stringify({error:9,message:'You must have one of this Type Items: '+d.needWebType.join(', ')}));
+															return;
+														}
+														
+														userdata.bank[bankid] = (parseFloat(userdata.bank[bankid]) || 0.0) - Math.abs(parseFloat(data.price) || 0.0);
+														if (typeof userdata.inventory.items[itemid] === 'undefined') {
+															userdata.inventory.items[itemid] = 1
+														} else {
+															userdata.inventory.items[itemid] = (parseInt(userdata.inventory.items[itemid]) || 0) + 1;
+														}
+														query('UPDATE users SET data = \''+escape_mysql(JSON.stringify(userdata))+'\' WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
+															res.status(200).send(JSON.stringify({success:0,message:user.username+', you have successfully acquired the '+itemid+' item'}));
+														});
 													}
 												}
 											})
