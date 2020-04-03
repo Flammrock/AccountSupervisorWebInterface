@@ -203,6 +203,8 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 
 app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res) => {
 	try {
+	getDatabaseInfo(function(isconnected){
+	if (isconnected) {
 	if (req.session.user) {
 		var bankid = escape_mysql(decodeURIComponent(req.params.bankId));
 		var shopid = escape_mysql(decodeURIComponent(req.params.shopId));
@@ -332,10 +334,16 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 	} else {
 		res.status(200).send(JSON.stringify({error:1,message:'Not Connected!'}));
 	}
+	} else {
+		res.status(200).send(JSON.stringify({error:1,message:'Error When Initialize...Can\'t find configuration in #accountsupervisor-database-config<br />-Please use `'+PREFIX+'init'+'` to reinit the configuration!'}));
+	}
+	});
 	} catch (e) {console.log(e.toString());}
 });
 
 app.get('/guild/:guildId/shop/:shopId', (req, res) => {
+	getDatabaseInfo(function(isconnected){
+	if (isconnected) {
 	if (req.session.user) {
 		const bot = new Discord.Client();
 		bot.on('ready', () => {
@@ -422,6 +430,10 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 			}
 		});
 	}
+	} else {
+		res.status(200).send(JSON.stringify({error:1,message:'Error When Initialize...Can\'t find configuration in #accountsupervisor-database-config<br />-Please use `'+PREFIX+'init'+'` to reinit the configuration!'}));
+	}
+	});
 });
 
 
