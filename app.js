@@ -57,7 +57,6 @@ function getDatabaseInfo(bot,guildId,callback) {
 		messages.each(function(item){
 			var m = item.content.match(/HOST: ([^\n]+)\n|USERNAME: ([^\n]+)\n|PASSWORD: ([^\n]+)\n|DATABASE: ([^\n]+)\n/g);
 			if (m==null) {
-				console.log('FUCKCKKCCKCKCCKCKCKCKKCK');
 				callback(1);
 				return;
 			}
@@ -81,7 +80,6 @@ function getDatabaseInfo(bot,guildId,callback) {
 		});
 	})
 	.catch(function(e){
-		console.log('NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOB:',e.toString());
 		callback(1);
 	});
 }
