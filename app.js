@@ -52,9 +52,11 @@ function tryConnect(args,callback) {
 	});
 	connection.on('error', function() {connection.end();callback(false);});
 }
-function getDatabaseInfo(callback) {
-	if (typeof DATABASE[msg.guild.id+'']!=='undefined') {callback(true);return;}
-	var configChannel = msg.guild.channels.cache.find(r=>r.name=='accountsupervisor-database-config');
+function getDatabaseInfo(guildId,callback) {
+	if (typeof DATABASE[guildId]!=='undefined') {callback(0);return;}
+	var guild = bot.guilds.cache.find(r=>r.id==guildId);
+	if (!guild)  {callback(2);return;}
+	var configChannel = guild.channels.cache.find(r=>r.name=='accountsupervisor-database-config');
 	configChannel.messages.fetch()
 	.then(function(messages){
 		messages = messages.filter(m => m.author.id == bot.user.id);
@@ -62,7 +64,7 @@ function getDatabaseInfo(callback) {
 		messages.each(function(item){
 			var m = item.content.match(/HOST: ([^\n]+)\n|USERNAME: ([^\n]+)\n|PASSWORD: ([^\n]+)\n|DATABASE: ([^\n]+)\n/g);
 			if (m==null) {
-				callback(false);
+				callback(1);
 				return;
 			}
 			m = m.map(function(m){
@@ -76,16 +78,16 @@ function getDatabaseInfo(callback) {
 			};
 			tryConnect([m[0][1],m[1][2],m[2][3],m[3][4]],function(r){
 				if (!r) {
-					callback(false);
+					callback(1);
 					return;
 				}
 				console.log(`Logged in Remote MySQL Server!`);
-				callback(true);
+				callback(0);
 			});
 		});
 	})
 	.catch(function(){
-		callback(false);
+		callback(1);
 	});
 }
 
@@ -203,14 +205,15 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
 
 app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res) => {
 	try {
-	getDatabaseInfo(function(isconnected){
-	if (isconnected) {
+	const bot = new Discord.Client();
+	bot.on('ready', () => {
+	getDatabaseInfo(req.params.guildId,function(err){
+	if (!err) {
 	if (req.session.user) {
 		var bankid = escape_mysql(decodeURIComponent(req.params.bankId));
 		var shopid = escape_mysql(decodeURIComponent(req.params.shopId));
 		var itemid = escape_mysql(decodeURIComponent(req.params.itemId));
-		const bot = new Discord.Client();
-		bot.on('ready', () => {
+		
 			var user = req.session.user;
 			var guilds = [];
 			bot.guilds.cache.forEach(guild => {
@@ -329,24 +332,30 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 			} else {
 				res.status(200).send(JSON.stringify({error:2,message:'Bot not in this Server!'}));
 			}
-		});
-		bot.login(TOKEN);
+		
 	} else {
 		res.status(200).send(JSON.stringify({error:1,message:'Not Connected!'}));
 	}
 	} else {
-		res.status(200).send(JSON.stringify({error:1,message:'Error When Initialize...Can\'t find configuration in #accountsupervisor-database-config<br />-Please use `'+PREFIX+'init'+'` to reinit the configuration!'}));
+		if (err==1) {
+			res.status(200).send(JSON.stringify({error:1,message:'Error When Initialize...Can\'t find configuration in #accountsupervisor-database-config<br />-Please use `'+PREFIX+'init'+'` to reinit the configuration!'}));
+		} else {
+			res.status(200).send(JSON.stringify({error:1,message:'Sorry, the Bot isn\'t in this server!'}));
+		}
 	}
 	});
+	});
+	bot.login(TOKEN);
 	} catch (e) {console.log(e.toString());}
 });
 
 app.get('/guild/:guildId/shop/:shopId', (req, res) => {
-	getDatabaseInfo(function(isconnected){
-	if (isconnected) {
+	const bot = new Discord.Client();
+	bot.on('ready', () => {
+	getDatabaseInfo(req.params.guildId,function(err){
+	if (!err) {
 	if (req.session.user) {
-		const bot = new Discord.Client();
-		bot.on('ready', () => {
+		
 			var user = req.session.user;
 			var guilds = [];
 			bot.guilds.cache.forEach(guild => {
@@ -418,8 +427,7 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 					}
 				});
 			}
-		});
-		bot.login(TOKEN);
+		
 	} else {
 		req.session.path = req.protocol + '://' + req.get('host') + req.originalUrl;
 		req.session.save(function(err) {
@@ -431,9 +439,15 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 		});
 	}
 	} else {
-		res.status(200).send(JSON.stringify({error:1,message:'Error When Initialize...Can\'t find configuration in #accountsupervisor-database-config<br />-Please use `'+PREFIX+'init'+'` to reinit the configuration!'}));
+		if (err==1) {
+			res.status(200).send(JSON.stringify({error:1,message:'Error When Initialize...Can\'t find configuration in #accountsupervisor-database-config<br />-Please use `'+PREFIX+'init'+'` to reinit the configuration!'}));
+		} else {
+			res.status(200).send(JSON.stringify({error:1,message:'Sorry, the Bot isn\'t in this server!'}));
+		}
 	}
 	});
+	});
+	bot.login(TOKEN);
 });
 
 
