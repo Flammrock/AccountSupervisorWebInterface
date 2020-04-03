@@ -1,18 +1,11 @@
 // WEB INTERFACE
 
 const Discord = require('discord.js');
-const mysql = require("mysql");
-
-
+const mysql = require('mysql');
 
 const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.Xob0gA.ttUiIXzN_Ez7YcsUySDvoAklyxA';
-const DATABASE_URI = process.env.DATABASE_URL;
-const DATABASE_PARSE = DATABASE_URI.match(/mysql:\/\/([^:]+):([^@]+)@([^\/]+)\/([^\?]+)\??/);
-
-console.log(DATABASE_PARSE);
-
+const TOKENINIT = 'qSlZyUk-w0-aOWJHuInzBA';
 const PREFIX = '+';
-
 const DATABASE = {};
 
 
