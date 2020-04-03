@@ -13,26 +13,21 @@ console.log(DATABASE_PARSE);
 
 const PREFIX = '+';
 
-const DATABASE = {
-	host:       DATABASE_PARSE[3],
-	user:       DATABASE_PARSE[1],
-	password:   DATABASE_PARSE[2],
-	database:   DATABASE_PARSE[4]
-};
+const DATABASE = {};
 
 
-function query(SQL,fn) {
+function query(guildId,SQL,fn) {
 	
-	var connection = mysql.createConnection(DATABASE);
+	var connection = mysql.createConnection(DATABASE[guildId]);
 	connection.connect((err) => {
-		if (err) {connection.end();return;};
+		if (err) {connection.end();console.log(err);return;};
 		if (SQL) {
 			connection.query(SQL,(err,rows) => {
 				if (err) {console.log(err);connection.end();return;};
 				try {
 					fn(err,rows);
 					connection.end();return;
-				} catch (e) {connection.end();return;}
+				} catch (e) {connection.end();console.log(e);return;}
 			});
 		} else {
 			console.log('Mysql: Connected!');
@@ -43,7 +38,56 @@ function query(SQL,fn) {
 	
 }
 function escape_mysql(s) {return s.replace(/'/g,"''");}
-query();
+function tryConnect(args,callback) {
+	var connection = mysql.createConnection({
+		host:       args[0],
+		user:       args[1],
+		password:   args[2],
+		database:   args[3]
+	});
+	connection.connect((err) => {
+		if (err) {connection.end();callback(false);return;};
+		connection.end();
+		callback(true);
+	});
+	connection.on('error', function() {connection.end();callback(false);});
+}
+function getDatabaseInfo(callback) {
+	if (typeof DATABASE[msg.guild.id+'']!=='undefined') {callback(true);return;}
+	var configChannel = msg.guild.channels.cache.find(r=>r.name=='accountsupervisor-database-config');
+	configChannel.messages.fetch()
+	.then(function(messages){
+		messages = messages.filter(m => m.author.id == bot.user.id);
+		messages = messages.filter(m => m.content.includes(TOKENINIT));
+		messages.each(function(item){
+			var m = item.content.match(/HOST: ([^\n]+)\n|USERNAME: ([^\n]+)\n|PASSWORD: ([^\n]+)\n|DATABASE: ([^\n]+)\n/g);
+			if (m==null) {
+				callback(false);
+				return;
+			}
+			m = m.map(function(m){
+				return m.match(/HOST: ([^\n]+)\n|USERNAME: ([^\n]+)\n|PASSWORD: ([^\n]+)\n|DATABASE: ([^\n]+)\n/);
+			});
+			DATABASE[msg.guild.id+''] = {
+				host:       m[0][1],
+				user:       m[1][2],
+				password:   m[2][3],
+				database:   m[3][4]
+			};
+			tryConnect([m[0][1],m[1][2],m[2][3],m[3][4]],function(r){
+				if (!r) {
+					callback(false);
+					return;
+				}
+				console.log(`Logged in Remote MySQL Server!`);
+				callback(true);
+			});
+		});
+	})
+	.catch(function(){
+		callback(false);
+	});
+}
 
 
 //////////////////////////////////////
@@ -178,7 +222,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 				}
 			}
 			if (isin) {
-				query('SELECT * FROM shop WHERE name = \''+escape_mysql('name_'+req.params.guildId+'_')+shopid+'\'',function(err,rows){
+				query(req.params.guildId,'SELECT * FROM shop WHERE name = \''+escape_mysql('name_'+req.params.guildId+'_')+shopid+'\'',function(err,rows){
 					if (rows.length==0) {
 						res.status(200).send(JSON.stringify({error:3,message:'This Shop doesn\'t exist!'}));
 						return;
@@ -187,7 +231,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 							var d = JSON.parse(rows[0].data);
 							d.web = typeof d.web !== 'undefined' ? d.web : true;
 							if (d.web) {
-								query('SELECT * FROM items',function(err,rows) {
+								query(req.params.guildId,'SELECT * FROM items',function(err,rows) {
 									if (rows.length!=0) {
 										var shopItems = {};
 										for (var i = 0; i < rows.length; i++) {
@@ -201,7 +245,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 										}
 										if (typeof shopItems[itemid] !== 'undefined') {
 											var data = shopItems[itemid];
-											query('SELECT * FROM users WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
+											query(req.params.guildId,'SELECT * FROM users WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
 												if (rows.length==0) {
 													res.status(200).send(JSON.stringify({error:8,message:'Not Enought Money!'}));
 													return;
@@ -258,7 +302,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 														} else {
 															userdata.inventory.items[itemid] = (parseInt(userdata.inventory.items[itemid]) || 0) + 1;
 														}
-														query('UPDATE users SET data = \''+escape_mysql(JSON.stringify(userdata))+'\' WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
+														query(req.params.guildId,'UPDATE users SET data = \''+escape_mysql(JSON.stringify(userdata))+'\' WHERE name=\''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(user.id)+'\'',function(err,rows){
 															res.status(200).send(JSON.stringify({success:0,message:user.username+', you have successfully acquired the '+itemid+' item'}));
 														});
 													}
@@ -310,7 +354,7 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 				}
 			}
 			if (isin) {
-				query('SELECT * FROM shop WHERE name = \''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(req.params.shopId)+'\'',function(err,rows){
+				query(req.params.guildId,'SELECT * FROM shop WHERE name = \''+escape_mysql('name_'+req.params.guildId+'_')+escape_mysql(req.params.shopId)+'\'',function(err,rows){
 					if (rows.length==0) {
 						res.status(200).sendFile(path.join(__dirname, 'noshop.html'));
 					} else {
@@ -318,7 +362,7 @@ app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 							var d = JSON.parse(rows[0].data);
 							d.web = typeof d.web !== 'undefined' ? d.web : true;
 							if (d.web) {
-								query('SELECT * FROM items',function(err,rows) {
+								query(req.params.guildId,'SELECT * FROM items',function(err,rows) {
 									if (rows.length==0) {
 										res.render('shop.ejs', {
 											user: req.session.user,
