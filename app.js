@@ -52,7 +52,7 @@ function tryConnect(args,callback) {
 	});
 	connection.on('error', function() {connection.end();callback(false);});
 }
-function getDatabaseInfo(guildId,callback) {
+function getDatabaseInfo(bot,guildId,callback) {
 	if (typeof DATABASE[guildId]!=='undefined') {callback(0);return;}
 	var guild = bot.guilds.cache.find(r=>r.id==guildId);
 	if (!guild)  {callback(2);return;}
@@ -207,7 +207,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 	try {
 	const bot = new Discord.Client();
 	bot.on('ready', () => {
-	getDatabaseInfo(req.params.guildId,function(err){
+	getDatabaseInfo(bot,req.params.guildId,function(err){
 	if (!err) {
 	if (req.session.user) {
 		var bankid = escape_mysql(decodeURIComponent(req.params.bankId));
@@ -352,7 +352,7 @@ app.get('/api/guild/:guildId/shop/:shopId/item/:itemId/bank/:bankId', (req, res)
 app.get('/guild/:guildId/shop/:shopId', (req, res) => {
 	const bot = new Discord.Client();
 	bot.on('ready', () => {
-	getDatabaseInfo(req.params.guildId,function(err){
+	getDatabaseInfo(bot,req.params.guildId,function(err){
 	if (!err) {
 	if (req.session.user) {
 		
