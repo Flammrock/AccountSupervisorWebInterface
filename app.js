@@ -5,7 +5,7 @@ const mysql = require("mysql");
 
 
 
-const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.XoLXNQ.hFJvWBxgMR3gd7_A6iHSEOcDZwU';
+const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.Xob0gA.ttUiIXzN_Ez7YcsUySDvoAklyxA';
 const DATABASE_URI = process.env.DATABASE_URL;
 const DATABASE_PARSE = DATABASE_URI.match(/mysql:\/\/([^:]+):([^@]+)@([^\/]+)\/([^\?]+)\??/);
 
