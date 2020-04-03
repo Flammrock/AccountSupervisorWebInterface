@@ -64,7 +64,7 @@ function getDatabaseInfo(bot,guildId,callback) {
 			m = m.map(function(m){
 				return m.match(/HOST: ([^\n]+)\n|USERNAME: ([^\n]+)\n|PASSWORD: ([^\n]+)\n|DATABASE: ([^\n]+)\n/);
 			});
-			DATABASE[msg.guild.id+''] = {
+			DATABASE[guildId] = {
 				host:       m[0][1],
 				user:       m[1][2],
 				password:   m[2][3],
