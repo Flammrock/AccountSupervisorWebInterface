@@ -3,7 +3,7 @@
 const Discord = require('discord.js');
 const mysql = require('mysql');
 
-const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.Xob0gA.ttUiIXzN_Ez7YcsUySDvoAklyxA';
+const TOKEN = 'NjkzODI1MzM0ODM1MTUwOTE4.XocHHA.jUR7PNJQ2N4_HQ4RrrfLs5gPdOI';
 const TOKENINIT = 'qSlZyUk-w0-aOWJHuInzBA';
 const PREFIX = '+';
 const DATABASE = {};
