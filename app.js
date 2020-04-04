@@ -119,7 +119,7 @@ app.use(express.static(__dirname));
 
 
 const CLIENT_ID = '693825334835150918';
-const CLIENT_SECRET = 'd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
+const CLIENT_SECRET = 'nd4Yjr0dIU7XC7miDfUHAagRB7aBztE8d';
 const redirect = encodeURIComponent('https://accountsupervisorwebinterface.herokuapp.com/api/discord/callback');
 
 const catchAsync = fn => ((req, res, next) => {
